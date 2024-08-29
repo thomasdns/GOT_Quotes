@@ -1,19 +1,25 @@
 import {
 	IonBackButton,
-	IonButtons,
+	IonCard,
+	IonCardContent,
+	IonCardHeader,
+	IonCardTitle,
 	IonContent,
 	IonHeader,
 	IonItem,
 	IonLabel,
-	IonLoading,
+	IonList,
 	IonPage,
 	IonTitle,
 	IonToolbar,
 	useIonViewDidEnter,
+	IonSkeletonText,
+	IonCardSubtitle,
 } from '@ionic/react';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import Character from '../types/Character';
+import SkeletonCharacter from '../components/SkeletonCharacter';
 
 const Details: React.FC = () => {
 	const [character, setCharacter] = useState<Character | null>(null);
@@ -52,16 +58,27 @@ const Details: React.FC = () => {
 				</IonToolbar>
 			</IonHeader>
 			<IonContent className='ion-padding'>
-				{loading && <p>Chargement =D</p>}
+				{loading && <SkeletonCharacter /> }
 				{character && (
 					<>
-						<IonTitle>{character.name}</IonTitle>
+					<IonCard>
+						<IonCardHeader>
+							<IonCardTitle>{character.name}</IonCardTitle>
+						</IonCardHeader>
+
+						<IonCardContent>
 						<IonLabel>
 							{character.house?.name || 'No house attached'}
 						</IonLabel>
-						{character.quotes.map((quote) => {
+						</IonCardContent>
+					</IonCard>
+
+					<IonList>
+					{character.quotes.map((quote) => {
 							return <p key={quote}>{quote}</p>;
 						})}
+					</IonList>
+					
 					</>
 				)}
 			</IonContent>
