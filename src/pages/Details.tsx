@@ -4,6 +4,7 @@ import {
 	IonContent,
 	IonHeader,
 	IonItem,
+	IonLabel,
 	IonLoading,
 	IonPage,
 	IonTitle,
@@ -55,9 +56,9 @@ const Details: React.FC = () => {
 				{character && (
 					<>
 						<IonTitle>{character.name}</IonTitle>
-						<IonTitle size='small'>
+						<IonLabel>
 							{character.house?.name || 'No house attached'}
-						</IonTitle>
+						</IonLabel>
 						{character.quotes.map((quote) => {
 							return <p key={quote}>{quote}</p>;
 						})}
