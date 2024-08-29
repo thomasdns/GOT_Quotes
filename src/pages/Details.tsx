@@ -1,36 +1,30 @@
 import {
 	IonBackButton,
-	IonCard,
-	IonCardContent,
-	IonCardHeader,
-	IonCardTitle,
+	IonButtons,
 	IonContent,
 	IonHeader,
 	IonItem,
 	IonLabel,
-	IonList,
+	IonLoading,
 	IonPage,
 	IonTitle,
 	IonToolbar,
 	useIonViewDidEnter,
-	IonSkeletonText,
-	IonCardSubtitle,
 } from '@ionic/react';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import Character from '../types/Character';
-import SkeletonCharacter from '../components/SkeletonCharacter';
 
 const Details: React.FC = () => {
 	const [character, setCharacter] = useState<Character | null>(null);
 	const [loading, setLoading] = useState(true);
 
-	const params: { slug: string } = useParams();
+	const { slug } = useParams() as { slug: string };
 	useIonViewDidEnter(() => {
 		const getData = async () => {
 			try {
 				const request = await fetch(
-					`https://api.gameofthronesquotes.xyz/v1/character/${params.slug}`
+					`https://api.gameofthronesquotes.xyz/v1/character/${slug}`
 				);
 
 				const data = await request.json();
@@ -58,27 +52,26 @@ const Details: React.FC = () => {
 				</IonToolbar>
 			</IonHeader>
 			<IonContent className='ion-padding'>
-				{loading && <SkeletonCharacter /> }
+				{loading && <p>Chargement =D</p>}
 				{character && (
 					<>
-					<IonCard>
-						<IonCardHeader>
-							<IonCardTitle>{character.name}</IonCardTitle>
-						</IonCardHeader>
-
-						<IonCardContent>
+						<IonTitle>{character.name}</IonTitle>
 						<IonLabel>
 							{character.house?.name || 'No house attached'}
 						</IonLabel>
-						</IonCardContent>
-					</IonCard>
-
-					<IonList>
-					{character.quotes.map((quote) => {
-							return <p key={quote}>{quote}</p>;
+						{character.quotes.map((quote) => {
+							return (
+								<IonItem
+									style={{
+										borderBottom: '5px solid red',
+										marginBottom: '10px',
+									}}
+									key={quote}
+								>
+									{quote}
+								</IonItem>
+							);
 						})}
-					</IonList>
-					
 					</>
 				)}
 			</IonContent>
