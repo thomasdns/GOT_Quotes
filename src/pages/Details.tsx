@@ -1,58 +1,71 @@
+import {
+	IonBackButton,
+	IonButtons,
+	IonContent,
+	IonHeader,
+	IonItem,
+	IonLoading,
+	IonPage,
+	IonTitle,
+	IonToolbar,
+	useIonViewDidEnter,
+} from '@ionic/react';
 import React, { useEffect, useState } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonLabel, IonButton, IonBackButton, IonButtons } from '@ionic/react';
-import { useParams } from 'react-router-dom';
-import './Detail.css';
-
-interface Character {
-  name: string;
-  slug: string;
-  house: {
-    slug: string;
-    name: string;
-  } | null;
-  quotes: string[];
-}
+import { useParams } from 'react-router';
+import Character from '../types/Character';
 
 const Details: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const [character, setCharacter] = useState<Character | null>(null);
+	const [character, setCharacter] = useState<Character | null>(null);
+	const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch(`https://api.gameofthronesquotes.xyz/v1/characters/${slug}`);
-      const data = await response.json();
-      setCharacter(data);
-    };
+	const params: { slug: string } = useParams();
+	useIonViewDidEnter(() => {
+		const getData = async () => {
+			try {
+				const request = await fetch(
+					`https://api.gameofthronesquotes.xyz/v1/character/${params.slug}`
+				);
 
-    fetchData();
-  }, [slug]);
+				const data = await request.json();
 
-  if (!character) return <div>Loading...</div>;
+				setTimeout(() => {
+					setCharacter(data[0]);
+					setLoading(false);
+				}, 2000);
+			} catch (error) {
+				console.log(error, 'Oups, prb pdt la récup des characters');
+			}
+		};
 
-  return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonButtons slot="start">
-            <IonBackButton />
-          </IonButtons>
-          <IonTitle>{character.name}</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent>
-        <IonLabel>
-          <h2>{character.name}</h2>
-          <p><strong>House:</strong> {character.house?.name || 'No House'}</p>
-          <p><strong>Quotes:</strong></p>
-          <ul>
-            {character.quotes.map((quote, index) => (
-              <li key={index}>{quote}</li>
-            ))}
-          </ul>
-        </IonLabel>
-      </IonContent>
-    </IonPage>
-  );
+		getData();
+	});
+
+	return (
+		<IonPage>
+			<IonHeader translucent={true}>
+				<IonToolbar>
+					<IonTitle slot='start'>GOT Quotes</IonTitle>
+					<IonItem slot='end'>
+						<IonBackButton />
+					</IonItem>
+				</IonToolbar>
+			</IonHeader>
+			<IonContent className='ion-padding'>
+				{loading && <p>Chargement =D</p>}
+				{character && (
+					<>
+						<IonTitle>{character.name}</IonTitle>
+						<IonTitle size='small'>
+							{character.house?.name || 'No house attached'}
+						</IonTitle>
+						{character.quotes.map((quote) => {
+							return <p key={quote}>{quote}</p>;
+						})}
+					</>
+				)}
+			</IonContent>
+		</IonPage>
+	);
 };
 
 export default Details;
